@@ -1,0 +1,1 @@
+{"virtualbox":{"/vagrant":{"guestpath":"/vagrant","hostpath":"/home/laurapm/Vagrant/actividad2_chef","disabled":false,"__vagrantfile":true},"v-csc-7744b115a":{"id":"v-csc-7744b115a","guestpath":"/tmp/vagrant-chef/8d4ded8f9e1be5b3de5111ba2467cb1e/cookbooks","hostpath":"/home/laurapm/Vagrant/actividad2_chef/chef-repo/cookbooks","disabled":false,"__vagrantfile":true}}}
