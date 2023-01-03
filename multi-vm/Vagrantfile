@@ -1,0 +1,68 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# All Vagrant configuration is done below. 
+Vagrant.configure("2") do |config|
+  
+  config.vm.define "ubuntu" do |ubuntu|
+    ubuntu.vm.box="ubuntu/focal64"
+    # # Create a forwarded port 
+    ubuntu.vm.network "forwarded_port", guest: 80, host: 8080
+
+    # # Create a private network, which allows host-only access to the machine
+    # using a specific IP.
+    ubuntu.vm.network "private_network", ip: "192.168.56.10"
+    
+    # Enable provisioning with a shell script. 
+    ubuntu.vm.provision "shell", inline: <<-SHELL
+      apt-get update
+      curl -L https://chef.io/chef/install.sh | sudo bash
+    SHELL
+
+    # IMPORTANTE => https://github.com/hashicorp/vagrant/issues/12337
+    ubuntu.vm.provision :chef_solo do |chef|
+      chef.cookbooks_path = "chef-repo/cookbooks"
+      chef.add_recipe "apache"
+      chef.arguments = "--chef-license accept"
+      chef.install = false
+    end
+    
+    ubuntu.vm.provider "virtualbox" do |vb|
+      # Customize the amount of memory on the VM:
+      vb.memory = "1024"
+    end
+  end
+
+  config.vm.define "centos" do |centos|
+    centos.vm.box="centos/7"
+    # # Create a forwarded port 
+    centos.vm.network "forwarded_port", guest: 80, host: 8081
+
+    # # Create a private network, which allows host-only access to the machine
+    # using a specific IP.
+    centos.vm.network "private_network", ip: "192.168.56.20"
+
+    centos.vbguest.installer_options = { allow_kernel_upgrade: true }
+    centos.vm.synced_folder ".", "/vagrant", type: 'virtualbox', disabled: false
+    
+    # Enable provisioning with a shell script. 
+    centos.vm.provision "shell", inline: <<-SHELL
+      yum update
+      curl -L https://chef.io/chef/install.sh | sudo bash
+    SHELL
+
+    # IMPORTANTE => https://github.com/hashicorp/vagrant/issues/12337
+    centos.vm.provision :chef_solo do |chef|
+      chef.cookbooks_path = "chef-repo/cookbooks"
+      chef.add_recipe "apache"
+      chef.arguments = "--chef-license accept"
+      chef.install = false
+    end
+
+    config.vm.provider "virtualbox" do |vb|
+      # Customize the amount of memory on the VM:
+      vb.memory = "1024"
+    end
+    
+  end
+end
